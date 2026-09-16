@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from 'react';
-import { supabase } from '@/lib/supabaseClient';
+import { getSupabase } from '@/lib/supabaseClient';
 import Note from './Note';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
 
@@ -33,13 +33,13 @@ export default function Board() {
   }, [viewMode]);
 
   const fetchNotes = async () => {
-    const { data, error } = await supabase.from('notes').select('*').is('deleted_at', null);
+    const { data, error } = await getSupabase().from('notes').select('*').is('deleted_at', null);
     if (error) console.error('Error fetching notes:', error);
     else setNotes(data || []);
   };
 
   const fetchArchivedNotes = async () => {
-    const { data, error } = await supabase.from('notes').select('*').not('deleted_at', 'is', null).order('deleted_at', { ascending: false });
+    const { data, error } = await getSupabase().from('notes').select('*').not('deleted_at', 'is', null).order('deleted_at', { ascending: false });
     if (error) console.error('Error fetching archived notes:', error);
     else setArchivedNotes(data || []);
   };
@@ -61,7 +61,7 @@ export default function Board() {
     setNotes([...notes, newNote]);
     setShowColors(false);
 
-    const { data, error } = await supabase.from('notes').insert([newNote]).select();
+    const { data, error } = await getSupabase().from('notes').insert([newNote]).select();
     if (error) {
       console.error('Error adding note:', error);
       setNotes(notes);
@@ -72,7 +72,7 @@ export default function Board() {
 
   const updateNote = async (id, updates) => {
     setNotes(notes.map(n => n.id === id ? { ...n, ...updates } : n));
-    const { error } = await supabase.from('notes').update(updates).eq('id', id);
+    const { error } = await getSupabase().from('notes').update(updates).eq('id', id);
     if (error) {
       console.error('Error updating note:', error);
       fetchNotes();
@@ -82,7 +82,7 @@ export default function Board() {
   const deleteNote = async (id) => {
     // Soft delete (archive)
     setNotes(notes.filter(n => n.id !== id));
-    const { error } = await supabase.from('notes').update({ deleted_at: new Date().toISOString() }).eq('id', id);
+    const { error } = await getSupabase().from('notes').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) {
       console.error('Error archiving note:', error);
       fetchNotes();
@@ -91,13 +91,13 @@ export default function Board() {
 
   const restoreNote = async (id) => {
     setArchivedNotes(archivedNotes.filter(n => n.id !== id));
-    const { error } = await supabase.from('notes').update({ deleted_at: null }).eq('id', id);
+    const { error } = await getSupabase().from('notes').update({ deleted_at: null }).eq('id', id);
     if (error) fetchArchivedNotes();
   };
 
   const permanentDelete = async (id) => {
     setArchivedNotes(archivedNotes.filter(n => n.id !== id));
-    const { error } = await supabase.from('notes').delete().eq('id', id);
+    const { error } = await getSupabase().from('notes').delete().eq('id', id);
     if (error) fetchArchivedNotes();
   };
 

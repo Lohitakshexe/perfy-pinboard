@@ -1,6 +1,41 @@
 import { createClient } from '@supabase/supabase-js'
 
-const supabaseUrl = process.env.NEXT_PUBLIC_SUPABASE_URL
-const supabaseAnonKey = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+let supabaseInstance = null;
 
-export const supabase = createClient(supabaseUrl, supabaseAnonKey)
+export const initSupabase = (url, key) => {
+  if (typeof window !== 'undefined') {
+    localStorage.setItem('NEXT_PUBLIC_SUPABASE_URL', url);
+    localStorage.setItem('NEXT_PUBLIC_SUPABASE_ANON_KEY', key);
+  }
+  supabaseInstance = createClient(url, key);
+  return supabaseInstance;
+};
+
+export const getSupabase = () => {
+  if (supabaseInstance) return supabaseInstance;
+
+  // Try to load from localStorage first (for the app version)
+  let url = typeof window !== 'undefined' ? localStorage.getItem('NEXT_PUBLIC_SUPABASE_URL') : null;
+  let key = typeof window !== 'undefined' ? localStorage.getItem('NEXT_PUBLIC_SUPABASE_ANON_KEY') : null;
+
+  // Fallback to environment variables if available (for local dev/Vercel)
+  if (!url || !key) {
+    url = process.env.NEXT_PUBLIC_SUPABASE_URL;
+    key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
+  }
+
+  if (url && key) {
+    supabaseInstance = createClient(url, key);
+    return supabaseInstance;
+  }
+
+  return null;
+};
+
+export const clearSupabase = () => {
+  if (typeof window !== 'undefined') {
+    localStorage.removeItem('NEXT_PUBLIC_SUPABASE_URL');
+    localStorage.removeItem('NEXT_PUBLIC_SUPABASE_ANON_KEY');
+  }
+  supabaseInstance = null;
+};

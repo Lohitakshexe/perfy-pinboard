@@ -400,7 +400,6 @@ export default function Note({ note, updateNote, deleteNote }) {
                 return (
                   <div 
                     key={i} 
-                    onClick={(e) => toggleCheck(e, i)}
                     style={{ display: 'flex', alignItems: 'flex-start', gap: '8px', cursor: 'pointer' }}
                   >
                     <div 
