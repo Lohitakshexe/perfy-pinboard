@@ -20,7 +20,7 @@ export const getSupabase = () => {
 
   // In local development, seamlessly fallback to .env.local variables
   if (process.env.NODE_ENV === 'development') {
-    if (!url || !key) {
+    if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY) {
       url = process.env.NEXT_PUBLIC_SUPABASE_URL;
       key = process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY;
     }
