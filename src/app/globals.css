@@ -1,49 +1,161 @@
+@import url('https://fonts.googleapis.com/css2?family=Caveat:wght@400..700&display=swap');
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
-}
-
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
-}
-
-html {
-  height: 100%;
-}
-
-html,
-body {
-  max-width: 100vw;
-  overflow-x: hidden;
-}
-
-body {
-  min-height: 100%;
-  display: flex;
-  flex-direction: column;
-  color: var(--foreground);
-  background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
+  --board-bg: #bc8249;
+  --board-dot: #8b5a2b;
+  --cork-color-1: #d4a373;
+  --cork-color-2: #bc8249;
+  --cork-color-3: #a46932;
+  --note-yellow: #fde047;
+  --note-pink: #f9a8d4;
+  --note-green: #86efac;
+  --note-blue: #93c5fd;
+  --note-white: #e2e8f0;
+  --note-brown: #d97706;
+  --note-grey: #9ca3af;
+  --note-olive: #65a30d;
+  --note-navy: #1e3a8a;
+  --note-plum: #4c1d95;
+  --note-slate: #334155;
+  --text-navy: #ffffff;
+  --text-plum: #ffffff;
+  --text-slate: #ffffff;
+  --shadow-sm: 0 4px 6px -1px rgb(0 0 0 / 0.1), 0 2px 4px -2px rgb(0 0 0 / 0.1);
+  --shadow-md: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+  --shadow-lg: 0 20px 25px -5px rgb(0 0 0 / 0.2), 0 8px 10px -6px rgb(0 0 0 / 0.1);
 }
 
 * {
   box-sizing: border-box;
-  padding: 0;
   margin: 0;
+  padding: 0;
 }
 
-a {
-  color: inherit;
-  text-decoration: none;
+body {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  background-color: #1a1a1a; /* Dark void background */
+  overflow: hidden; /* Prevent scrolling, it's a fixed board */
+  height: 100vh;
+  width: 100vw;
 }
 
-@media (prefers-color-scheme: dark) {
-  html {
-    color-scheme: dark;
-  }
+.cork-board {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
 }
+
+/* Infinite corkboard background attached to the panning board */
+.cork-board::before {
+  content: "";
+  position: absolute;
+  top: -4000px;
+  left: -4000px;
+  right: -4000px;
+  bottom: -4000px;
+  background-color: var(--board-bg);
+  background-image: radial-gradient(var(--board-dot) 2px, transparent 2px);
+  background-size: 20px 20px;
+  background-position: 0 0;
+  z-index: -1;
+  pointer-events: none;
+  will-change: transform;
+}
+
+/* Base Note Styles */
+.note-font {
+  font-family: 'Caveat', cursive;
+}
+
+/* Animations */
+@keyframes note-enter {
+  0% { opacity: 0; transform: scale(0.8) rotate(-5deg); }
+  100% { opacity: 1; transform: scale(1) rotate(0deg); }
+}
+
+.animate-note-enter {
+  animation: note-enter 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
+}
+
+/* UI Elements */
+.dock-container {
+  position: fixed;
+  bottom: 2rem;
+  right: 2rem;
+  display: flex;
+  gap: 20px;
+  align-items: center;
+  z-index: 100;
+}
+
+.dock-btn {
+  font-size: 50px;
+  background: transparent;
+  color: white;
+  border: none;
+  cursor: pointer;
+  transition: transform 0.2s, filter 0.2s, color 0.2s;
+  text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.dock-btn:hover {
+  transform: scale(1.2);
+}
+
+.trash-bin {
+  pointer-events: none; /* Let notes pass over it for hit detection */
+}
+
+.trash-bin.active {
+  transform: scale(1.5) rotate(-10deg);
+  filter: drop-shadow(2px 2px 8px rgba(255,0,0,0.8));
+}
+
+/* Minimalist Theme Overrides */
+body.theme-minimalist {
+  --board-bg: #1a1a1a;
+  --board-dot: #333333;
+  --cork-color-1: #1a1a1a;
+  --cork-color-2: #1a1a1a;
+  --cork-color-3: #1a1a1a;
+}
+
+
+.note-colors-picker {
+  position: fixed;
+  bottom: calc(2rem + 70px);
+  right: 2rem;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  z-index: 99;
+}
+
+.color-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid white;
+  cursor: pointer;
+  box-shadow: var(--shadow-md);
+  transition: transform 0.2s;
+}
+
+.color-btn:hover {
+  transform: scale(1.1);
+}
+
+.bg-yellow { background-color: var(--note-yellow); }
+.bg-pink { background-color: var(--note-pink); }
+.bg-green { background-color: var(--note-green); }
+.bg-blue { background-color: var(--note-blue); }
+.bg-white { background-color: var(--note-white); }
+.bg-brown { background-color: var(--note-brown); }
+.bg-grey { background-color: var(--note-grey); }
+.bg-olive { background-color: var(--note-olive); }
+.bg-navy { background-color: var(--note-navy); }
+.bg-plum { background-color: var(--note-plum); }
+.bg-slate { background-color: var(--note-slate); }

@@ -1,0 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
+<resources>
+    <string name="app_name">Perfy Pinboard</string>
+    <string name="title_activity_main">Perfy Pinboard</string>
+    <string name="package_name">com.perfy.pinboard</string>
+    <string name="custom_url_scheme">com.perfy.pinboard</string>
+</resources>
