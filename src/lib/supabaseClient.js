@@ -27,8 +27,13 @@ export const getSupabase = () => {
   }
 
   if (url && key) {
-    supabaseInstance = createClient(url, key);
-    return supabaseInstance;
+    try {
+      supabaseInstance = createClient(url, key);
+      return supabaseInstance;
+    } catch (e) {
+      // Invalid URL or Key, clear them so they can be re-entered
+      return null;
+    }
   }
 
   return null;
