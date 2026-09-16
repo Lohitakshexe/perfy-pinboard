@@ -2,6 +2,11 @@
 
 Hey! So I built this because I really needed a cool, freeform digital pinboard to just throw all my notes, thoughts, and checklists on without feeling restricted by normal list apps. It's basically a massive infinite canvas where you can drag and drop colorful sticky notes, resize them exactly how you want, and organize your chaotic brain!
 
+<!-- ADD YOUR SCREENSHOT BELOW THIS LINE BY DRAGGING AND DROPPING IT IN THE GITHUB WEB EDITOR -->
+<p align="center">
+  <i>(Screenshot goes here!)</i>
+</p>
+
 I spent a bunch of time getting the note scaling and dragging to feel *just right* (seriously, try resizing the notes using the corner handle vs the side handles—it's super smooth and text scales perfectly now!).
 
 ### What it does:
