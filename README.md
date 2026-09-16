@@ -44,14 +44,14 @@ create table notes (
 
 ### 2. Local Setup
 1. Clone this repo: `git clone https://github.com/Lohitakshexe/perfy-pinboard.git`
-2. Run `npm install` (or `bun install` if you're cool like that).
+2. Run `bun install`.
 3. Rename the `.env.example` file to `.env.local` and paste your Supabase URL and Key in there.
-4. Run `npm run dev` (or `bun run dev`) and open `http://localhost:3000` to see it working on the web!
+4. Run `bun run dev` and open `http://localhost:3000` to see it working on the web!
 
 ### 3. Building the Android App 📱
 1. Make sure you have Android Studio installed.
-2. Run a full web build first: `npm run build`
-3. Sync it to Capacitor: `npx cap sync android`
+2. Run a full web build first: `bun run build`
+3. Sync it to Capacitor: `bunx cap sync android`
 4. Open the Android project in Android Studio to build the APK, or just run `cd android && ./gradlew assembleDebug` in the terminal.
 
 Hope you like it! Let me know if you run into any weird bugs lol.
