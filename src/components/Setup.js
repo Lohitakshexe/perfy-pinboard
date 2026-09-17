@@ -22,6 +22,11 @@ export default function Setup({ onComplete }) {
     }
   };
 
+  const handleLocalMode = () => {
+    localStorage.setItem('USE_LOCAL_STORAGE', 'true');
+    onComplete();
+  };
+
   return (
     <div style={{
       width: '100vw', height: '100vh', 
@@ -87,6 +92,31 @@ export default function Setup({ onComplete }) {
           }}
         >
           Connect & Start 🚀
+        </button>
+
+        <div style={{ display: 'flex', alignItems: 'center', margin: '10px 0' }}>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }}></div>
+          <span style={{ padding: '0 10px', color: '#888', fontSize: '14px' }}>OR</span>
+          <div style={{ flex: 1, height: '1px', backgroundColor: '#e5e5e5' }}></div>
+        </div>
+
+        <button 
+          onClick={handleLocalMode}
+          style={{ 
+            padding: '15px', 
+            fontSize: '18px', 
+            fontWeight: 'bold',
+            backgroundColor: '#f5f5f5', 
+            color: '#1a1a1a', 
+            border: '2px solid #e5e5e5', 
+            borderRadius: '6px', 
+            cursor: 'pointer',
+            transition: 'background-color 0.2s'
+          }}
+          onMouseOver={e => e.target.style.backgroundColor = '#eaeaea'}
+          onMouseOut={e => e.target.style.backgroundColor = '#f5f5f5'}
+        >
+          Use Offline Local Storage 💾
         </button>
       </div>
     </div>

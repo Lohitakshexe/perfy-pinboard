@@ -10,8 +10,13 @@ export default function Home() {
   const [isChecking, setIsChecking] = useState(true);
 
   useEffect(() => {
-    if (getSupabase()) {
-      setIsConfigured(true);
+    try {
+      const isLocal = localStorage.getItem('USE_LOCAL_STORAGE') === 'true';
+      if (isLocal || getSupabase()) {
+        setIsConfigured(true);
+      }
+    } catch (e) {
+      // If getSupabase throws, we shouldn't crash the app!
     }
     setIsChecking(false);
   }, []);

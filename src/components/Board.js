@@ -27,18 +27,31 @@ export default function Board() {
     localStorage.setItem('perfy-theme', theme);
   }, [theme]);
 
+  const isLocalMode = typeof window !== 'undefined' && localStorage.getItem('USE_LOCAL_STORAGE') === 'true';
+
   useEffect(() => {
     if (viewMode === 'board') fetchNotes();
     else fetchArchivedNotes();
   }, [viewMode]);
 
   const fetchNotes = async () => {
+    if (isLocalMode) {
+      const localNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      setNotes(localNotes.filter(n => !n.deleted_at));
+      return;
+    }
     const { data, error } = await getSupabase().from('notes').select('*').is('deleted_at', null);
     if (error) console.error('Error fetching notes:', error);
     else setNotes(data || []);
   };
 
   const fetchArchivedNotes = async () => {
+    if (isLocalMode) {
+      const localNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      const archived = localNotes.filter(n => n.deleted_at).sort((a, b) => new Date(b.deleted_at) - new Date(a.deleted_at));
+      setArchivedNotes(archived);
+      return;
+    }
     const { data, error } = await getSupabase().from('notes').select('*').not('deleted_at', 'is', null).order('deleted_at', { ascending: false });
     if (error) console.error('Error fetching archived notes:', error);
     else setArchivedNotes(data || []);
@@ -58,8 +71,15 @@ export default function Board() {
     };
 
     // Optimistic UI
-    setNotes([...notes, newNote]);
+    const updatedNotes = [...notes, newNote];
+    setNotes(updatedNotes);
     setShowColors(false);
+
+    if (isLocalMode) {
+      const allLocalNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      localStorage.setItem('perfy_notes', JSON.stringify([...allLocalNotes, newNote]));
+      return;
+    }
 
     const { data, error } = await getSupabase().from('notes').insert([newNote]).select();
     if (error) {
@@ -71,7 +91,16 @@ export default function Board() {
   };
 
   const updateNote = async (id, updates) => {
-    setNotes(notes.map(n => n.id === id ? { ...n, ...updates } : n));
+    const updatedNotes = notes.map(n => n.id === id ? { ...n, ...updates } : n);
+    setNotes(updatedNotes);
+
+    if (isLocalMode) {
+      const allLocalNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      const updatedLocal = allLocalNotes.map(n => n.id === id ? { ...n, ...updates } : n);
+      localStorage.setItem('perfy_notes', JSON.stringify(updatedLocal));
+      return;
+    }
+
     const { error } = await getSupabase().from('notes').update(updates).eq('id', id);
     if (error) {
       console.error('Error updating note:', error);
@@ -82,6 +111,14 @@ export default function Board() {
   const deleteNote = async (id) => {
     // Soft delete (archive)
     setNotes(notes.filter(n => n.id !== id));
+    
+    if (isLocalMode) {
+      const allLocalNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      const updatedLocal = allLocalNotes.map(n => n.id === id ? { ...n, deleted_at: new Date().toISOString() } : n);
+      localStorage.setItem('perfy_notes', JSON.stringify(updatedLocal));
+      return;
+    }
+
     const { error } = await getSupabase().from('notes').update({ deleted_at: new Date().toISOString() }).eq('id', id);
     if (error) {
       console.error('Error archiving note:', error);
@@ -91,12 +128,30 @@ export default function Board() {
 
   const restoreNote = async (id) => {
     setArchivedNotes(archivedNotes.filter(n => n.id !== id));
+    
+    if (isLocalMode) {
+      const allLocalNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      const updatedLocal = allLocalNotes.map(n => n.id === id ? { ...n, deleted_at: null } : n);
+      localStorage.setItem('perfy_notes', JSON.stringify(updatedLocal));
+      fetchArchivedNotes();
+      return;
+    }
+
     const { error } = await getSupabase().from('notes').update({ deleted_at: null }).eq('id', id);
     if (error) fetchArchivedNotes();
   };
 
   const permanentDelete = async (id) => {
     setArchivedNotes(archivedNotes.filter(n => n.id !== id));
+    
+    if (isLocalMode) {
+      const allLocalNotes = JSON.parse(localStorage.getItem('perfy_notes') || '[]');
+      const updatedLocal = allLocalNotes.filter(n => n.id !== id);
+      localStorage.setItem('perfy_notes', JSON.stringify(updatedLocal));
+      fetchArchivedNotes();
+      return;
+    }
+
     const { error } = await getSupabase().from('notes').delete().eq('id', id);
     if (error) fetchArchivedNotes();
   };
