@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import Board from '@/components/Board';
 import Setup from '@/components/Setup';
 import { getSupabase } from '@/lib/supabaseClient';
+import { Capacitor } from '@capacitor/core';
 
 export default function Home() {
   const [isConfigured, setIsConfigured] = useState(false);
@@ -11,7 +12,8 @@ export default function Home() {
 
   useEffect(() => {
     try {
-      const isLocal = localStorage.getItem('USE_LOCAL_STORAGE') === 'true';
+      const isNative = Capacitor.isNativePlatform();
+      const isLocal = isNative || localStorage.getItem('USE_LOCAL_STORAGE') === 'true';
       if (isLocal || getSupabase()) {
         setIsConfigured(true);
       }

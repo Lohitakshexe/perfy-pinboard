@@ -4,6 +4,7 @@ import { useState, useEffect } from 'react';
 import { getSupabase } from '@/lib/supabaseClient';
 import Note from './Note';
 import { TransformWrapper, TransformComponent } from 'react-zoom-pan-pinch';
+import { Capacitor } from '@capacitor/core';
 
 export default function Board() {
   const [notes, setNotes] = useState([]);
@@ -27,7 +28,8 @@ export default function Board() {
     localStorage.setItem('perfy-theme', theme);
   }, [theme]);
 
-  const isLocalMode = typeof window !== 'undefined' && localStorage.getItem('USE_LOCAL_STORAGE') === 'true';
+  const isNative = typeof window !== 'undefined' && Capacitor.isNativePlatform();
+  const isLocalMode = isNative || (typeof window !== 'undefined' && localStorage.getItem('USE_LOCAL_STORAGE') === 'true');
 
   useEffect(() => {
     if (viewMode === 'board') fetchNotes();
